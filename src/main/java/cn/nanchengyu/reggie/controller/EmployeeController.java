@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -44,17 +45,17 @@ public class EmployeeController {
         Employee emp = employeeService.getOne(queryWrapper);//username为唯一索引
 
         //3. 如果没有查询到则返回登录失败结果
-        if(emp == null){
+        if (emp == null) {
             return R.error("登录失败");
         }
 
         //4.密码比对
-        if(!emp.getPassword().equals(password)){
-            return  R.error("密码错误");
+        if (!emp.getPassword().equals(password)) {
+            return R.error("密码错误");
         }
 
         //5. 查询员工状态
-        if(emp.getStatus()== 0){
+        if (emp.getStatus() == 0) {
             return R.error("账号已禁用");
         }
         //6. 登录成功，将员工id存入session并返回登录成功结果
@@ -63,15 +64,31 @@ public class EmployeeController {
         return R.success(emp);
 
 
-
     }
 
     @PostMapping("/logout")
-    public R<String> logout(HttpServletRequest request){
+    public R<String> logout(HttpServletRequest request) {
         request.getSession().removeAttribute("employee");
         return R.success("退出成功");
     }
 
+    @PostMapping
+    public R<String> save(HttpServletRequest request, @RequestBody Employee employee) { //前端接收JSON字符串 利用@RequestBody 将其转换为Java对象
+        log.info("新增员工，员工信息：{}", employee.toString());
+        //设置初始密码123456，并加密处理
+        employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
+        //其他字段赋值
+        employee.setCreateTime(LocalDateTime.now());
+        employee.setUpdateTime(LocalDateTime.now());
+        //获取当前登录用户id
+        //利用getSession()方法获取当前登录用户id
+        Long empId = (Long) request.getSession().getAttribute("employee");
+        employee.setCreateUser(empId);
+        employee.setUpdateUser(empId);
+        //保存员工信息
+        employeeService.save(employee);
+        return R.success("新增员工成功");
+    }
 
 
 }
