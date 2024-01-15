@@ -16,9 +16,9 @@ public class R<T> {
 
     private Integer code; //编码：1成功，0和其它数字为失败
 
-    private String msg; //错误信息
+    private String msg; //错误信息 msg是错误信息 //展示在error方法中
 
-    private T data; //数据
+    private T data; //数据  返回给前端的数据 在controller中是<>泛型表示
 
     private Map map = new HashMap(); //动态数据
 

@@ -4,17 +4,16 @@ import cn.nanchengyu.reggie.common.R;
 import cn.nanchengyu.reggie.entity.Employee;
 import cn.nanchengyu.reggie.service.EmployeeService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.util.Objects;
+
 
 /**
  * ClassName: EmployeeController
@@ -88,6 +87,29 @@ public class EmployeeController {
         //保存员工信息
         employeeService.save(employee);
         return R.success("新增员工成功");
+    }
+
+    @GetMapping("/page")
+    public R<Page> page(int page, int pageSize, String name) { //前端需要的数据page,pageSize,name
+        log.info("page = {},pageSize = {},name = {}", page, pageSize, name);
+        //构造分页构造器
+        Page pageInfo = new Page(page, pageSize);
+
+        //构造条件构造器
+        LambdaQueryWrapper<Employee> queryWrapper = new LambdaQueryWrapper<>();
+        //添加条件过滤器
+//        if(name == null){
+//            return R.error("name不能为空");
+//        }
+        queryWrapper.like(StringUtils.isNotEmpty(name), Employee::getName, name); //name不为空时，才会执行这个语句
+        //添加排序条件
+        queryWrapper.orderByDesc(Employee::getUpdateTime);
+
+        //执行查询
+        employeeService.page(pageInfo, queryWrapper);
+
+        return R.success(pageInfo);
+
     }
 
 
