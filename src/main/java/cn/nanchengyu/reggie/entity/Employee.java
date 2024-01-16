@@ -3,6 +3,7 @@ package cn.nanchengyu.reggie.entity;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -26,9 +27,9 @@ public class Employee implements Serializable {
     private String idNumber;
 
     private Integer status;
-
+    @TableField(fill = FieldFill.INSERT) //插入时填充这个字段
     private LocalDateTime createTime;
-
+    @TableField(fill = FieldFill.INSERT_UPDATE) //插入和更新时填充这个字段
     private LocalDateTime updateTime;
 
     @TableField(fill = FieldFill.INSERT)
