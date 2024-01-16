@@ -1,14 +1,16 @@
 package cn.nanchengyu.reggie.common;
 
 import lombok.Data;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * 响应结果类
  * 通用返回结果，服务端响应的数据最终都会封装成此对象
- * @author nanchengyu
+ *
  * @param <T>
+ * @author nanchengyu
  */
 
 @Data
